@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Habits Analytics</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Analytics Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_analytics.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="logo-area">
+        <div class="logo-icon">📊</div>
+        <div class="logo-text">Habit<span class="highlight">Insights</span></div>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label>View Mode</label>
+          <div class="select-wrapper">
+            <select id="viewSelector">
+              <option value="month">Current Month</option>
+              <option value="daily">Daily Detail</option>
+              <option value="weekly">Weekly Overview</option>
+              <option value="monthly">Monthly Trends</option>
+              <option value="yearly">Yearly Summary</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control-group dynamic-control" id="dateControl">
+          <label>Select Date</label>
+          <input type="date" id="selectedDate" />
+        </div>
+
+        <div class="control-group dynamic-control" id="monthControl">
+          <label>Select Month</label>
+          <input type="month" id="selectedMonth" />
+        </div>
+
+        <div class="control-group dynamic-control" id="yearControl">
+          <label>Select Year</label>
+          <div class="select-wrapper">
+            <select id="selectedYear"></select>
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <div class="control-group">
+          <label>Visible Charts</label>
+          <div class="toggles">
+            <label class="toggle-item"><input type="checkbox" id="showDaily" checked/> <span>Daily Trend</span></label>
+            <label class="toggle-item"><input type="checkbox" id="showWeekly" checked/> <span>Weekly Stats</span></label>
+            <label class="toggle-item"><input type="checkbox" id="showMonthly" checked/> <span>Monthly Stats</span></label>
+            <label class="toggle-item"><input type="checkbox" id="showYearly" /> <span>Yearly Stats</span></label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="sidebar-footer">
+        <a href="/" class="back-btn">
+          <span class="icon">←</span> Back to Tracker
+        </a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="main-header">
+        <div class="header-text">
+          <h1 id="mainTitle">Dashboard</h1>
+          <p id="subTitle" class="subtitle">Your progress at a glance</p>
+        </div>
+        <div class="header-actions">
+           <button id="refreshBtn" class="icon-btn" title="Refresh Data">↻</button>
+           <button id="downloadSnapshot" class="action-btn">Download Report</button>
+        </div>
+      </header>
+
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon">🔥</div>
+          <div class="kpi-content">
+            <h3>Current Streak</h3>
+            <div class="kpi-value" id="streakNumber">—</div>
+            <div class="kpi-sub" id="streakText">Keep it up!</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon">📅</div>
+          <div class="kpi-content">
+            <h3>Today's Completion</h3>
+            <div class="kpi-value" id="todayPercentLarge">—</div>
+            <div class="kpi-sub" id="todayText">Loading...</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon">📈</div>
+          <div class="kpi-content">
+            <h3>Monthly Average</h3>
+            <div class="progress-wrapper">
+              <div class="progress-bar">
+                <div id="monthlyAvgFill" style="width:0%"></div>
+              </div>
+            </div>
+            <div class="kpi-sub" id="monthlyAvgText">—</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="charts-grid">
+        <div class="chart-card glass-panel" id="dailyChartCard">
+          <div class="card-header">
+            <h4>Daily Performance</h4>
+            <span class="badge">This Month</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="dailyLineChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card glass-panel" id="weeklyChartCard">
+          <div class="card-header">
+            <h4>Weekly Consistency</h4>
+            <span class="badge">This Month</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="weeklyBarChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card glass-panel" id="monthlyChartCard">
+          <div class="card-header">
+            <h4>Monthly Overview</h4>
+            <span class="badge">This Year</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="monthlyBarChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card glass-panel" id="yearlyChartCard">
+          <div class="card-header">
+            <h4>Yearly Trend</h4>
+            <span class="badge">All Time</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="yearlyBarChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="details-section">
+        <div class="glass-panel table-panel">
+          <div class="card-header">
+            <h4>Detailed Breakdown</h4>
+          </div>
+          <div id="dayTableWrap" class="custom-table"></div>
+        </div>
+      </section>
+      
+      <!-- Hidden dump for debugging -->
+      <pre id="analysisDump" style="display:none"></pre>
+
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='script_analytics.js') }}"></script>
+</body>
+</html>

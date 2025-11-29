@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HABIT Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        
+        <header>
+            <h1>HABIT Tracker</h1>
+            <nav style="margin-top:10px;">
+            </nav>
+        </header>
+
+        <main class="dashboard">
+            <!-- Level 1: Daily -->
+            <div class="level-section" id="level1">
+                <div class="level-header" onclick="toggleLevel('level1')">
+                    <h2>Level 1 - Daily</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="level-content">
+                    <div class="daily-container">
+                        <div class="calendar-section">
+                            <div class="calendar-header">
+                                <button onclick="changeMonth(-1)" class="nav-btn">‹</button>
+                                <h3 id="currentMonthYear"></h3>
+                                <button onclick="changeMonth(1)" class="nav-btn">›</button>
+                            </div>
+                            <div class="calendar" id="calendar"></div>
+                        </div>
+                        <div class="habits-section">
+                            <div class="add-habit">
+                                <input type="text" id="dailyHabitInput" placeholder="Enter daily habit">
+                                <button onclick="addHabit('daily')">Add Habit</button>
+                            </div>
+                            <div class="selected-date">
+                                <h4 id="selectedDateTitle">Select a date</h4>
+                            </div>
+                            <div class="habits-list" id="dailyHabitsList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level 2: Weekly -->
+            <div class="level-section" id="level2">
+                <div class="level-header" onclick="toggleLevel('level2')">
+                    <h2>Level 2 - Weekly</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="level-content">
+                    <div class="weekly-container">
+                        <div class="week-selector">
+                            <h3 id="currentWeekTitle"></h3>
+                            <div class="date-picker-container">
+                                <label class="date-picker-label" for="weekDatePicker">Select Date:</label>
+                                <input type="date" id="weekDatePicker" class="date-picker" onchange="selectWeekDate()">
+                            </div>
+                            <div class="week-navigation">
+                                <button onclick="changeWeek(-1)" class="nav-btn">‹ Previous Week</button>
+                                <button onclick="changeWeek(1)" class="nav-btn">Next Week ›</button>
+                            </div>
+                        </div>
+                        <div class="add-habit">
+                            <input type="text" id="weeklyHabitInput" placeholder="Enter weekly habit">
+                            <button onclick="addHabit('weekly')">Add Habit</button>
+                        </div>
+                        <div class="habits-list" id="weeklyHabitsList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level 3: Monthly -->
+            <div class="level-section" id="level3">
+                <div class="level-header" onclick="toggleLevel('level3')">
+                    <h2>Level 3 - Monthly</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="level-content">
+                    <div class="monthly-container">
+                        <div class="month-selector">
+                            <h3 id="currentMonthTitle"></h3>
+                            <div class="month-navigation">
+                                <button onclick="changeMonthView(-1)" class="nav-btn">‹ Previous Month</button>
+                                <button onclick="changeMonthView(1)" class="nav-btn">Next Month ›</button>
+                            </div>
+                        </div>
+                        <div class="add-habit">
+                            <input type="text" id="monthlyHabitInput" placeholder="Enter monthly habit">
+                            <button onclick="addHabit('monthly')">Add Habit</button>
+                        </div>
+                        <div class="habits-list" id="monthlyHabitsList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level 4: Yearly -->
+            <div class="level-section" id="level4">
+                <div class="level-header" onclick="toggleLevel('level4')">
+                    <h2>Level 4 - Yearly</h2>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="level-content">
+                    <div class="yearly-container">
+                        <div class="year-selector">
+                            <h3 id="currentYearTitle"></h3>
+                            <div class="year-navigation">
+                                <button onclick="changeYear(-1)" class="nav-btn">‹ Previous Year</button>
+                                <select id="yearDropdown" class="year-dropdown" onchange="selectYear()"></select>
+                                <button onclick="changeYear(1)" class="nav-btn">Next Year ›</button>
+                            </div>
+                        </div>
+                        <div class="add-habit">
+                            <input type="text" id="yearlyHabitInput" placeholder="Enter yearly habit">
+                            <button onclick="addHabit('yearly')">Add Habit</button>
+                        </div>
+                        <div class="habits-list" id="yearlyHabitsList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Section -->
+            <div class="analysis-section">
+                <h2>Progress Analysis</h2>
+                <button onclick="fetchAnalysis('daily')">Daily Goals (Year)</button>
+                <button onclick="fetchAnalysis('weekly')">Weekly Goals (Year)</button>
+                <button onclick="fetchAnalysis('monthly')">Monthly Goals (Year)</button>
+                <button onclick="window.location.href='/analytics'">VISUALIZE</button>
+                <div id="analysisResult"></div>
+            </div>
+
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
